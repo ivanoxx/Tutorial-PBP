@@ -19,8 +19,17 @@ def show_wishlist(request):
         'nama': 'Dafi Nafidz Radhiyya',
         'last_login': request.COOKIES['last_login'].split('.')[0],
     }
-    print(type(context['last_login']))
     return render(request, "wishlist.html", context)
+
+def show_ajax(request):
+    data_barang_wishlist = BarangWishlist.objects.all()
+    context = {
+        'list_barang': data_barang_wishlist,
+        # 'nama': 'Dafi',
+        'nama': 'Dafi Nafidz Radhiyya',
+        'last_login': request.COOKIES['last_login'].split('.')[0],
+    }
+    return render(request, "wishlist_ajax.html", context)
 
 def show_xml(request):
     data = BarangWishlist.objects.all()
@@ -58,7 +67,7 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user) # melakukan login terlebih dahulu
-            response = HttpResponseRedirect(reverse("wishlist:show_wishlist")) # membuat response
+            response = HttpResponseRedirect(reverse("wishlist:show_ajax")) # membuat response
             response.set_cookie('last_login', str(datetime.datetime.now())) # membuat cookie last_login dan menambahkannya ke dalam response
             return response
         else:
@@ -71,3 +80,18 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('wishlist:login'))
     response.delete_cookie('last_login')
     return response
+
+@login_required(login_url='/wishlist/login/')
+def create_wishlist(request):
+    if request.method == 'POST':
+        nama = request.POST.get('nama')
+        harga = request.POST.get('harga')
+        deskripsi = request.POST.get('deskripsi')
+
+        if nama != "" and harga != "" and deskripsi != 0:
+            BarangWishlist.objects.create(user=request.user, nama_barang=nama, harga_barang=harga, deskripsi=deskripsi)
+            return HttpResponseRedirect(reverse('wishlist:show_ajax'))
+
+        messages.info(request, 'Ada data yang belum diisi!')
+
+    return render(request, 'wishlist_ajax.html')

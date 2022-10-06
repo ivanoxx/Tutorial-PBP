@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wishlist</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+  </head>
+  <body>
+
+    <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;">
+      <div class="container-fluid">
+        <a class="navbar-brand">
+          <img src="https://cdn.discordapp.com/attachments/902951430153981993/1024916342211616778/letter-w_1.png" alt="Logo" width="24" height="24" class="d-inline-block align-text-top">
+          Wishlist
+        </a>
+        <h3>Selamat datang, {{nama}}!</h3>
+        <a class="btn btn-outline-danger" href="{% url 'wishlist:logout' %}">Logout</a>
+      </div>
+    </nav>
+    
+  
+    <div class="table-responsive-sm">
+      <table class="table">
+        <thead>
+          <tr>
+          <th>Nama Barang</th>
+          <th>Harga Barang</th>
+          <th>Deskripsi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% comment %} Tambahkan data di bawah baris ini {% endcomment %}
+          {% for barang in list_barang %}
+              <tr>
+                  <td>{{barang.nama_barang}}</td>
+                  <td>{{barang.harga_barang}}</td>
+                  <td>{{barang.deskripsi}}</td>
+              </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <h5>Sesi terakhir login: {{ last_login }}</h5>
+
+    <div class = "submit">
+      
+        <h3>Tambah Wishlist</h3>
+    
+        <form method="POST" action="">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <td>Nama Barang: </td>
+                    <td><input type="text" name="nama" class="form-control"></td>
+                </tr>
+                        
+                <tr>
+                    <td>Harga Barang: </td>
+                    <td><input type="text" name="harga" class="form-control"></td>
+                </tr>
+    
+                <tr>
+                    <td>Deskripsi: </td>
+                    <td><input type="text" name="deskripsi" class="form-control"></td>
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td>
+                      <input class="btn btn-primary" type="submit" value="Submit">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}     
+    
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+  </body>
+</html>
+
+{% endblock content %}
