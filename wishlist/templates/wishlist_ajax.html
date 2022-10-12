@@ -33,15 +33,9 @@
           <th>Deskripsi</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="table">
           {% comment %} Tambahkan data di bawah baris ini {% endcomment %}
-          {% for barang in list_barang %}
-              <tr>
-                  <td>{{barang.nama_barang}}</td>
-                  <td>{{barang.harga_barang}}</td>
-                  <td>{{barang.deskripsi}}</td>
-              </tr>
-          {% endfor %}
+
         </tbody>
       </table>
     </div>
@@ -56,23 +50,23 @@
             <table>
                 <tr>
                     <td>Nama Barang: </td>
-                    <td><input type="text" name="nama" class="form-control"></td>
+                    <td><input type="text" id="nama" name="nama" class="form-control"></td>
                 </tr>
                         
                 <tr>
                     <td>Harga Barang: </td>
-                    <td><input type="text" name="harga" class="form-control"></td>
+                    <td><input type="text" id="harga" name="harga" class="form-control"></td>
                 </tr>
     
                 <tr>
                     <td>Deskripsi: </td>
-                    <td><input type="text" name="deskripsi" class="form-control"></td>
+                    <td><input type="text" id="deskripsi" name="deskripsi" class="form-control"></td>
                 </tr>
 
                 <tr>
                     <td></td>
                     <td>
-                      <input class="btn btn-primary" type="submit" value="Submit">
+                      <input class="btn btn-primary" id= "submit" type="submit" value="Submit">
                     </td>
                 </tr>
             </table>
@@ -89,7 +83,41 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    
+    <script>
+      function showTable(data) {
+        $("#table").empty();
+        for (let i = 0; i < data.length; i++) {
+          $("#table").append(`
+              <tr>
+                  <td>${data[i].fields.nama_barang}</td>
+                  <td>${data[i].fields.harga_barang}</td>
+                  <td>${data[i].fields.deskripsi}</td>
+              </tr>`)
+        }
+      }
+
+      function createWishlist(event) {
+        event.preventDefault();
+        $.post(
+          "{% url 'wishlist:create_wishlist' %}",
+          {
+            nama: $("#nama").val(),
+            harga: $("#harga").val(),
+            deskripsi: $("#deskripsi").val(),
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+          },
+          function() {
+            $.get("/wishlist/json", showTable)
+          },
+          "json"
+        );
+      }
+
+      $(document).ready(function(){
+        $("#submit").click(createWishlist);
+        $.get("/wishlist/json", showTable);
+      });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
   </body>
 </html>

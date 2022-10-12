@@ -15,17 +15,14 @@ def show_wishlist(request):
     data_barang_wishlist = BarangWishlist.objects.all()
     context = {
         'list_barang': data_barang_wishlist,
-        # 'nama': 'Dafi',
         'nama': 'Dafi Nafidz Radhiyya',
         'last_login': request.COOKIES['last_login'].split('.')[0],
     }
     return render(request, "wishlist.html", context)
 
+@login_required(login_url='/wishlist/login/')
 def show_ajax(request):
-    data_barang_wishlist = BarangWishlist.objects.all()
     context = {
-        'list_barang': data_barang_wishlist,
-        # 'nama': 'Dafi',
         'nama': 'Dafi Nafidz Radhiyya',
         'last_login': request.COOKIES['last_login'].split('.')[0],
     }
@@ -88,10 +85,9 @@ def create_wishlist(request):
         harga = request.POST.get('harga')
         deskripsi = request.POST.get('deskripsi')
 
-        if nama != "" and harga != "" and deskripsi != 0:
-            BarangWishlist.objects.create(user=request.user, nama_barang=nama, harga_barang=harga, deskripsi=deskripsi)
-            return HttpResponseRedirect(reverse('wishlist:show_ajax'))
+        # print(f"{nama = }\n{harga = }\n{deskripsi = }")
+        new_wish = BarangWishlist(nama_barang=nama, harga_barang=harga, deskripsi=deskripsi)
+        new_wish.save()
 
-        messages.info(request, 'Ada data yang belum diisi!')
-
+        return HttpResponse(serializers.serialize("json", [new_wish]), content_type="application/json")
     return render(request, 'wishlist_ajax.html')
